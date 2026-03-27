@@ -40,6 +40,19 @@ def IQR_evolve(lista_datos: list) -> float:
     q3 = percentil_evolve(lista_datos, 75)
     return q3 - q1
 
+def skewness_evolve(lista_datos: list) -> float:
+    media = media_evolve(lista_datos)
+    desviacion = desviacion_evolve(lista_datos)
+    n = len(lista_datos)
+    return (sum((x - media) ** 3 for x in lista_datos))/ (n-1) * desviacion ** 3
+    
+def kurtosis_evolve(lista_datos: list) -> float:
+    media = media_evolve(lista_datos)
+    desviacion = desviacion_evolve(lista_datos)
+    n = len(lista_datos)
+    return (sum((x - media) ** 4 for x in lista_datos))/ (n) * desviacion ** 4
+
+
 
 if __name__ == "__main__":
     
