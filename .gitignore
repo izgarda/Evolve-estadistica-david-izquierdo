@@ -7,7 +7,8 @@ __pycache__/
 *.so
 
 # Folders
-data
+raw_data
+ejercicios_clase
 
 # Distribution / packaging
 .Python
