@@ -26,7 +26,7 @@ En este ejercicio se realiza un EDA sobre un dataset que contiene información s
 
 > En general no se observa una correlación muy fuerte entre la superficie quemada y las variables numéricas (que corresponden a datos meteorológicos), esto indica que en el impacto de un incendio pueden tener un papel más importante otros factores a los estudiados en este apartado. 
 > Las variables con mayor correlación con la variable objetivo (superficie quemada) son:
-> - duración del incendio:**0.32**
+> - duración del incendio: **0.32**
 > - días que han pasado desde la última lluvia: **0.10**
 > - temperatura máxima del día en que se inicia el incendio: **0.08**
 
@@ -48,16 +48,18 @@ En este ejercicio se realiza un EDA sobre un dataset que contiene información s
 ## Ejercicio 2 — Inferencia con Scikit-Learn
 
 ---
-Añade aqui tu descripción y analisis:
+En este apartado hemos aplicado una regresión lineal múltiple para tratar de predecir el tamaño de la superficie quemada por un incendio. Como parte del preprocesamiento se han aplicado escalas logarítmicas a variables cuya distribución era muy asimétrica. 
+Partiendo del EDA previo se han agrupado algunas variables categóricas, se han eliminado otras y del resultado final se han categorizado para convertir el dataframe en datos numéricos. 
+Como consecuencia de la escala logarítmica vemos en el scatterplot de los residuos una línea recta sobre la que se apilan los puntos que corresponde a los incendios con menos de 1 hectárea quemadas. 
 
 ---
 
 **Pregunta 2.1** — Indica los valores de MAE, RMSE y R² de la regresión lineal sobre el test set. ¿El modelo funciona bien? ¿Por qué?
 
 > Los valores obtenidos para las métricas del modelo son:
-> - MAE: 0.7691
-> - RMSE: 1.0119
-> - $R^2$: 0.3474
+> - $MAE: 0.7691$
+> - $RMSE: 1.0119$
+> - $R^2: 0.3474$
 
 > Estos valores muestran que el modelo sólo es capaz de predecir ciertos tipos de incendios fallando en los casos más extremos, confirmando que el fenómeno es más complejo que una relación lineal y afectando factores que no estamos teniendo en cuenta en este análisis. 
 
@@ -98,25 +100,25 @@ Añade aqui tu descripción y analisis:
 
 ## Ejercicio 4 — Series Temporales
 ---
-Añade aqui tu descripción y analisis:
+Anlizamos una serie temporal sintética para extraer la información de la tendencia, estacionalidad y tipo de ruido
 
 ---
 
 **Pregunta 4.1** — ¿La serie presenta tendencia? Descríbela brevemente (tipo, dirección, magnitud aproximada).
 
-> _Escribe aquí tu respuesta_
+> Se observa una tendencia creciente que comienza aproximadamente en $50$ y termina en $150$ a lo largo de los seis años de análisis. La pendiente es aproximadamente $m = \frac{150-50}{2024-2018} = 16.7$. Dentro de la tendencia creciente se observa un ciclo mayor de unos tres años.
 
 **Pregunta 4.2** — ¿Hay estacionalidad? Indica el periodo aproximado en días y la amplitud del patrón estacional.
 
-> _Escribe aquí tu respuesta_
+> En el gráfico que muestra la estacionalidad observamos una forma periódica que se repite cada 365 días con valores máximos entorno a $10$ y mínimos alrededor de $-20$, por lo que la estacionalidad tiene una **amplitud de $\textbf{30}$**
 
 **Pregunta 4.3** — ¿Se aprecian ciclos de largo plazo en la serie? ¿Cómo los diferencias de la tendencia?
 
-> _Escribe aquí tu respuesta_
+> Existe un ciclo mayor que no se observa en la gráfica de estacionalidad, pero si observamos con detalle la gráfica de tendencia vemos que no es una línea recta perfecta, sino que tiene cierta oscilación de 3 años entorno a la línea recta.
 
 **Pregunta 4.4** — ¿El residuo se ajusta a un ruido ideal? Indica la media, la desviación típica y el resultado del test de normalidad (p-value) para justificar tu respuesta.
 
-> _Escribe aquí tu respuesta_
+> Del test de Jarque_Bera obtenemos los siguientes resultados: $stat = 1.10$ y $p = 0.57$, por lo que no descartamos la normalidad y observando el histograma de los residuos con la gráfica de la distribución normal superpuesta vemos que se ajusta perfectamente a un ruido ideal. El ruido resenta una distribución nomral de media $\mu = 0.13$ y desviación estándar $\sigma = 3.22$
 
 ---
 

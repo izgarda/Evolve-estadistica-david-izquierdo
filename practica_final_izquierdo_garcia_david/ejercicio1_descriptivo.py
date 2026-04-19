@@ -142,7 +142,7 @@ def boxplot_variable_objetivo_por_categoria(df, columnas, ruta_guardado, x_size 
     media_global = df[target].mean()
     mediana_global = df[target].median()
 
-    # 4. Bucle para generar los 8 gráficos
+    # Bucle para generar los 8 gráficos
     for i, col in enumerate(columnas):
         if col == 'mes_deteccion':
             df[col] = pd.Categorical(df[col], categories=orden_meses, ordered=True)
@@ -165,7 +165,7 @@ def boxplot_variable_objetivo_por_categoria(df, columnas, ruta_guardado, x_size 
         # Escala logarítmica en el eje Y
         axes[i].set_yscale('log')
         
-        # Línea horizontal de la media y medianaglobal porcategoría, para referencia visual
+        # Línea horizontal de la media y mediana global
         axes[i].axhline(media_global, color='red', linestyle='--', linewidth=1.5, label=f'Media: {media_global:.2f}')
         axes[i].axhline(mediana_global, color='blue', linestyle='-', linewidth=1.5, label=f'Mediana: {mediana_global:.2f}')
 
@@ -206,7 +206,7 @@ def mapa_calor_correlaciones(df) -> None:
     # Matriz de correlaciones de Pearson
     matriz_correlaciones = df[columnas_numericas].corr(method='pearson')
 
-    # Mascara para ocultar la diagonal y los valores por debajo de ella (correlaciones redundantes)
+    # Mascara para ocultar la diagonal y los valores por encima de ella (redundantes)
     mascara = np.triu(np.ones_like(matriz_correlaciones, dtype=bool))
     plt.figure(figsize=(10, 8))
     plt.title('Matriz de Correlación de Pearson', fontsize=18, fontweight='bold', pad=20)
@@ -255,7 +255,7 @@ def graficar_frecuencias_categoricas(df) -> None:
     # Seleccionamos solo las columnas categóricas
     columnas_cats = df.select_dtypes(include=['object', 'category']).columns
 
-    # Cuadrícula de 2 filas x 4 columnas para 8 gráficos
+    # Cuadrícula de 4 filas y 2 columnas para 8 gráficos
     fig, axes = plt.subplots(nrows=4, ncols=2, figsize=(20, 30))
     axes = axes.flatten()
 
@@ -312,7 +312,7 @@ def graficar_frecuencias_categoricas(df) -> None:
                 ha_align = 'right'
                 color_texto = 'white'
                 
-                # Excepción de legibilidad: Si la barra es minúscula (ej. < 5%), 
+                # Excepción de legibilidad: Si la barra es minúscula, 
                 # el texto blanco no cabe dentro. Lo sacamos fuera en negro.
                 if width < (xmax * 0.08): 
                     x_pos = width + (xmax * 0.01)
@@ -329,9 +329,6 @@ def graficar_frecuencias_categoricas(df) -> None:
                     fontweight='bold', 
                     fontsize=10
                 )
-            
-        # Expandir un 20% el eje X para que los porcentajes no se salgan del recuadro
-        axes[i].set_xlim(0, xmax * 1.05)
 
     # Ajustar márgenes
     plt.tight_layout(h_pad=3.0, w_pad=2.0)
@@ -402,79 +399,80 @@ if __name__ == "__main__":
     # Carga de datos
     df = pd.read_parquet('practica_final_izquierdo_garcia_david/data/incendios_limpio.parquet')
 
-    # verificación de la carga correcta
+    # # verificación de la carga correcta
     # print(df.head())
 
-    # Tamaño del dataset
-    filas, columnas = df.shape
-    print("=== Resumen Estructural ===")
-    print(f"Número de filas: {filas}")
-    print(f"Número de columnas: {columnas}")
-    print(f"Tamaño en memoria: {df.memory_usage(deep=True).sum() / 1024 ** 2:.2f} MB")
-    print("========================================")
+    # # Tamaño del dataset
+    # filas, columnas = df.shape
+    # print("=== Resumen Estructural ===")
+    # print(f"Número de filas: {filas}")
+    # print(f"Número de columnas: {columnas}")
+    # print(f"Tamaño en memoria: {df.memory_usage(deep=True).sum() / 1024 ** 2:.2f} MB")
+    # print("========================================")
 
-    # Tipo de dato de cada columna
-    print("=== Tipos de Dato (dtypes) ===")
-    print(df.dtypes)
-    print("========================================")
+    # # Tipo de dato de cada columna
+    # print("=== Tipos de Dato (dtypes) ===")
+    # print(df.dtypes)
+    # print("========================================")
 
-    # Porcentaje de valores nulos por columna
-    print("=== Porcentaje de Valores Nulos por Columna ===")
-    nulos = df.isnull().mean() * 100
-    print(nulos)
-    print("========================================")
+    # # Porcentaje de valores nulos por columna
+    # print("=== Porcentaje de Valores Nulos por Columna ===")
+    # nulos = df.isnull().mean() * 100
+    # print(nulos)
+    # print("========================================")
 
-    # Estadísticos descriptivos de variables numéricas
-    print("=== Estadísticos Descriptivos de Variables Numéricas ===")
-    df.describe().to_csv('practica_final_izquierdo_garcia_david/output/ej1_descriptivo.csv', index=True)
-    print(df.describe())
-    print("========================================")
+    # # Estadísticos descriptivos de variables numéricas
+    # print("=== Estadísticos Descriptivos de Variables Numéricas ===")
+    # df.describe().to_csv('practica_final_izquierdo_garcia_david/output/ej1_descriptivo.csv', index=True)
+    # print(df.describe())
+    # print("========================================")
 
-    # Rango intercuartílico (IQR) de la variable objetivo: perdidas_superficie_ha
-    Q1 = df['perdidas_superficie_ha'].quantile(0.25)
-    Q3 = df['perdidas_superficie_ha'].quantile(0.75)
-    IQR = Q3 - Q1
-    print("=== Rango Intercuartílico (IQR) de la variable objetivo 'perdidas_superficie_ha' ===")
-    print(f"Q1: {Q1}")
-    print(f"Q3: {Q3}")
-    print(f"IQR: {IQR}")
-    print("========================================")
+    # # Rango intercuartílico (IQR) de la variable objetivo: perdidas_superficie_ha
+    # Q1 = df['perdidas_superficie_ha'].quantile(0.25)
+    # Q3 = df['perdidas_superficie_ha'].quantile(0.75)
+    # IQR = Q3 - Q1
+    # print("=== Rango Intercuartílico (IQR) de la variable objetivo 'perdidas_superficie_ha' ===")
+    # print(f"Q1: {Q1}")
+    # print(f"Q3: {Q3}")
+    # print(f"IQR: {IQR}")
+    # print("========================================")
 
-    # Coeficiente de asimetría (skewness) y curtosis para las variables numéricas
-    print("=== Coeficiente de Asimetría (Skewness) y Curtosis ===")
-    columnas_numericas = df.select_dtypes(include=[np.number]).columns
-    skewness = df[columnas_numericas].skew()    
-    kurtosis = df[columnas_numericas].kurtosis()
-    skew_kurt_df = pd.DataFrame({'Skewness': skewness, 'Kurtosis': kurtosis})
-    print(skew_kurt_df.round(2))
-    print("========================================")   
+    # # Coeficiente de asimetría (skewness) y curtosis para las variables numéricas
+    # print("=== Coeficiente de Asimetría (Skewness) y Curtosis ===")
+    # columnas_numericas = df.select_dtypes(include=[np.number]).columns
+    # skewness = df[columnas_numericas].skew()    
+    # kurtosis = df[columnas_numericas].kurtosis()
+    # skew_kurt_df = pd.DataFrame({'Skewness': skewness, 'Kurtosis': kurtosis})
+    # print(skew_kurt_df.round(2))
+    # print("========================================")   
 
     # Generación de histogramas con tendencia KDE para las variables numéricas
-    # histogramas_variables_numericas(df)
+    histogramas_variables_numericas(df)
 
     # Generación de boxplots de la variable objetivo por cada variable categórica
     columnas_g1 = ['hora_deteccion','clase_dia', 'tipo_ataque', 'intencionalidad']
     columnas_g2 = ['lugar_inicio', 'tipo_combustible', 'tipo_fuego', 'mes_deteccion']
 
-    # boxplot_variable_objetivo_por_categoria(df, columnas_g1, 'practica_final_izquierdo_garcia_david/output/ej1_boxplots_1.png', x_size=20)
-    # boxplot_variable_objetivo_por_categoria(df, columnas_g2, 'practica_final_izquierdo_garcia_david/output/ej1_boxplots_2.png', x_size=20)
+    boxplot_variable_objetivo_por_categoria(df, columnas_g1, 'practica_final_izquierdo_garcia_david/output/ej1_boxplots_1.png', x_size=20)
+    boxplot_variable_objetivo_por_categoria(df, columnas_g2, 'practica_final_izquierdo_garcia_david/output/ej1_boxplots_2.png', x_size=20)
 
 
 
-    # Detección de outliers usando el método IQR para la variable objetivo
-    outliers = df[(df['perdidas_superficie_ha'] < (Q1 - 1.5 * IQR)) | (df['perdidas_superficie_ha'] > (Q3 + 1.5 * IQR))]
-    print("=== Detección de Outliers usando el método IQR para 'perdidas_superficie_ha' ===")
-    print(f"Número de outliers detectados: {outliers.shape[0]}") 
-    print("========================================")
+    # # Detección de outliers usando el método IQR para la variable objetivo
 
-    # Eliminación de outliers usando el método IQR para la variable objetivo
-    df_sin_outliers = df[~((df['perdidas_superficie_ha'] < (Q1 - 1.5 * IQR)) | (df['perdidas_superficie_ha'] > (Q3 + 1.5 * IQR)))]
+    # outliers = df[(df['perdidas_superficie_ha'] < (Q1 - 1.5 * IQR)) | (df['perdidas_superficie_ha'] > (Q3 + 1.5 * IQR))]
+    # print("=== Detección de Outliers usando el método IQR para 'perdidas_superficie_ha' ===")
+    # print(f"Número de outliers detectados: {outliers.shape[0]}") 
+    # print("========================================")
+
+    # # Eliminación de outliers usando el método IQR para la variable objetivo
+    # df_sin_outliers = df[~((df['perdidas_superficie_ha'] < (Q1 - 1.5 * IQR)) | (df['perdidas_superficie_ha'] > (Q3 + 1.5 * IQR)))]
 
 # Generación del mapa de calor de correlaciones de Pearson entre las variables numéricas
-    #mapa_calor_correlaciones(df)
+    mapa_calor_correlaciones(df)
 
 # Generación de gráficos de barras con la frecuencia relativa de cada categoría de las variables categóricas
-    #graficar_frecuencias_categoricas(df)
+    graficar_frecuencias_categoricas(df)
 
 # Generación de gráficos de dispersión para evaluar posibles relaciones no lineales entre las variables numéricas predictoras y la variable objetivo
-    graficar_scatter_relaciones(df_sin_outliers)
+    #graficar_scatter_relaciones(df_sin_outliers)

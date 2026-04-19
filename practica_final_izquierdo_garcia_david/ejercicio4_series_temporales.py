@@ -9,39 +9,43 @@ DESCRIPCIÓN
 En este ejercicio trabajarás con una serie temporal sintética generada con
 una semilla fija. Tendrás que:
 
-  1. Visualizar la serie completa.
-  2. Descomponerla en sus componentes: Tendencia, Estacionalidad y Residuo.
-  3. Analizar cada componente y responder las preguntas del fichero
-     Respuestas.md (sección Ejercicio 4).
-  4. Evaluar si el ruido (residuo) se ajusta a un ruido ideal (gaussiano
-     con media ≈ 0 y varianza constante).
+    1. Visualizar la serie completa.
+    2. Descomponerla en sus componentes: Tendencia, Estacionalidad y Residuo.
+    3. Analizar cada componente y responder las preguntas del fichero Respuestas.md (sección Ejercicio 4).
+    4. Evaluar si el ruido (residuo) se ajusta a un ruido ideal (gaussiano con media ≈ 0 y varianza constante).
 
 LIBRERÍAS PERMITIDAS
 --------------------
-  - numpy, pandas
-  - matplotlib, seaborn
-  - statsmodels   (para seasonal_decompose y adfuller)
-  - scipy.stats   (para el test de normalidad del ruido)
+    - numpy, pandas
+    - matplotlib, seaborn
+    - statsmodels   (para seasonal_decompose y adfuller)
+    - scipy.stats   (para el test de normalidad del ruido)
 
 SALIDAS ESPERADAS (carpeta output/)
 ------------------------------------
-  - output/ej4_serie_original.png      → Gráfico de la serie completa
-  - output/ej4_descomposicion.png      → Los 4 subgráficos de descomposición
-  - output/ej4_acf_pacf.png           → Gráfico ACF y PACF del residuo
-  - output/ej4_histograma_ruido.png   → Histograma + curva normal del residuo
-  - output/ej4_analisis.txt            → Estadísticos numéricos del análisis
+    - output/ej4_serie_original.png      → Gráfico de la serie completa
+    - output/ej4_descomposicion.png      → Los 4 subgráficos de descomposición
+    - output/ej4_acf_pacf.png            → Gráfico ACF y PACF del residuo
+    - output/ej4_histograma_ruido.png    → Histograma + curva normal del residuo
+    - output/ej4_analisis.txt            → Estadísticos numéricos del análisis
 
 =============================================================================
 """
 
 import numpy as np
 import pandas as pd
+import scipy
+import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.stattools import adfuller
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from scipy.stats import norm, jarque_bera
 import os
 
 # Crear carpeta de salida si no existe
-os.makedirs("output", exist_ok=True)
+os.makedirs("practica_final_izquierdo_garcia_david/output", exist_ok=True)
 
 
 # =============================================================================
@@ -53,10 +57,10 @@ def generar_serie_temporal(semilla=42):
     Genera una serie temporal sintética con componentes conocidos.
 
     La serie tiene:
-      - Una tendencia lineal creciente.
-      - Estacionalidad anual (periodo 365 días).
-      - Ciclos de largo plazo (periodo ~4 años).
-      - Ruido gaussiano.
+    - Una tendencia lineal creciente.
+    - Estacionalidad anual (periodo 365 días).
+    - Ciclos de largo plazo (periodo ~4 años).
+    - Ruido gaussiano.
 
     Parámetros
     ----------
@@ -114,8 +118,14 @@ def visualizar_serie(serie):
     - Añade título, etiquetas de ejes y una cuadrícula suave
     - Guarda con plt.savefig("output/ej4_serie_original.png", dpi=150, bbox_inches='tight')
     """
-    # TODO: Implementa la visualización de la serie
-    pass
+    fig, ax = plt.subplots(figsize=(14, 4))
+    ax.plot(serie.index, serie.values)
+    ax.set_title("Serie Temporal Original")
+    ax.set_xlabel("Fecha")
+    ax.set_ylabel("Valor")
+    ax.grid(True, linestyle='--', alpha=0.7)
+    plt.savefig("practica_final_izquierdo_garcia_david/output/ej4_serie_original.png", dpi=150, bbox_inches='tight')
+    plt.close(fig)
 
 
 # =============================================================================
@@ -144,11 +154,26 @@ def descomponer_serie(serie):
     - resultado.plot() genera los 4 subgráficos automáticamente
     - Guarda la figura con fig.savefig(...)
     """
-    # TODO: Implementa la descomposición
-    # resultado = seasonal_decompose(...)
-    # fig = resultado.plot()
-    # ...
-    pass
+    
+    resultado = seasonal_decompose(serie, model='additive', period=365)
+    fig = resultado.plot()
+    
+    titulos = ["Serie Original", "Tendencia", "Estacionalidad", "Residuo"]
+    for ax, titulo in zip(fig.axes, titulos):
+        ax.set_title(titulo)
+        if ax == fig.axes[len(fig.axes) - 1]: ax.set_xlabel("Fecha")
+        ax.set_ylabel("")
+        ax.grid(True, linestyle='--', alpha=0.7)
+
+    # etiqueta eje y común para los 4 subgráficos
+    fig.text(0.01, 0.5, "Valores", va='center', rotation='vertical', fontsize=12)
+    fig.tight_layout()
+    
+    fig.savefig("practica_final_izquierdo_garcia_david/output/ej4_descomposicion.png", dpi=150, bbox_inches='tight')
+    # plt.show() # Sólo para mostrar la figura en pantalla y tomar medidas con el cursor
+    plt.close(fig)
+    
+    return resultado
 
 
 # =============================================================================
@@ -161,9 +186,9 @@ def analizar_residuo(residuo):
     a un ruido ideal (gaussiano, media ≈ 0, varianza constante, sin autocorr.).
 
     Genera:
-      - output/ej4_acf_pacf.png          → ACF y PACF del residuo
-      - output/ej4_histograma_ruido.png  → Histograma + curva normal ajustada
-      - output/ej4_analisis.txt          → Estadísticos numéricos
+    - output/ej4_acf_pacf.png          → ACF y PACF del residuo
+    - output/ej4_histograma_ruido.png  → Histograma + curva normal ajustada
+    - output/ej4_analisis.txt          → Estadísticos numéricos
 
     Parámetros
     ----------
@@ -186,31 +211,63 @@ def analizar_residuo(residuo):
     - ACF / PACF:
         from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
     """
-    # TODO: Limpia el residuo (elimina NaN al inicio/fin)
-    residuo_limpio = None  # ← residuo.dropna()
+    
+    
+    # Limpieza del residuo (elimina NaN al inicio/fin)
+    residuo_limpio = residuo.dropna()  # ← residuo.dropna()
 
-    # TODO: Calcula estadísticos básicos
-    media    = None
-    std      = None
-    asimetria = None
-    curtosis  = None
+    # Cálculo de estadísticos básicos
+    media    = residuo_limpio.mean()
+    std      = residuo_limpio.std()
+    asimetria = residuo_limpio.skew()
+    curtosis  = residuo_limpio.kurtosis()
+
+    # Test de normalidad (Jarque-Bera)
+    stat_jb, p_jb = jarque_bera(residuo_limpio)
+    print(f"Test Jarque-Bera: stat={stat_jb:.2f}, p={p_jb:.4f}")
 
 
-    # TODO: Test de estacionariedad (ADF)
-    # from statsmodels.tsa.stattools import adfuller
-    # resultado_adf = adfuller(residuo_limpio)
-    # p_adf = resultado_adf[1]
+    # Test de estacionariedad (ADF)
+    resultado_adf = adfuller(residuo_limpio)
+    p_adf = resultado_adf[1]
 
-    # TODO: Gráfico ACF y PACF del residuo → output/ej4_acf_pacf.png
-    pass
+    # Gráfico ACF y PACF del residuo → output/ej4_acf_pacf.png
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    plot_acf(residuo_limpio, ax=axes[0], lags=50)
+    plot_pacf(residuo_limpio, ax=axes[1], lags=50, method='ywm')
+    axes[0].set_title("ACF del Residuo", fontsize=11, fontweight='bold')
+    axes[1].set_title("PACF del Residuo", fontsize=11, fontweight='bold')
+    axes[0].set_xlabel("Lag")
+    axes[1].set_xlabel("Lag")
+    axes[0].grid(True, alpha=0.3)
+    axes[1].grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig("practica_final_izquierdo_garcia_david/output/ej4_acf_pacf.png", dpi=150, bbox_inches='tight')
+    plt.close(fig)
 
-    # TODO: Histograma del residuo con curva normal superpuesta
+    # Histograma del residuo con curva normal superpuesta
     # → output/ej4_histograma_ruido.png
-    # Pista: usa scipy.stats.norm.pdf para la curva teórica
-    pass
+    fig, ax = plt.subplots(figsize=(10, 5))
+    sns.histplot(residuo_limpio, bins=30, kde=False, stat='density', ax=ax, color='skyblue', edgecolor='black')
+    x = np.linspace(residuo_limpio.min(), residuo_limpio.max(), 100)
+    
+    ax.plot(x, scipy.stats.norm.pdf(x, media, std), color='red', lw=2.5, label=f'Normal($\\mu$={media:.2f}, $\\sigma$={std:.2f})')
+    ax.set_title("Histograma del Residuo con Curva Normal Ajustada", fontsize=12, fontweight='bold')
+    ax.set_xlabel("Valor del Residuo", fontsize=11)
+    ax.set_ylabel("Densidad", fontsize=11)
+    ax.legend(fontsize=10)
+    ax.grid(True, alpha=0.3, axis='y')
+    plt.tight_layout()
+    plt.savefig("practica_final_izquierdo_garcia_david/output/ej4_histograma_ruido.png", dpi=150, bbox_inches='tight')
+    plt.close(fig)
 
-    # TODO: Guardar estadísticos en output/ej4_analisis.txt
-    pass
+    # Guardado de estadísticos en output/ej4_analisis.txt
+    with open("practica_final_izquierdo_garcia_david/output/ej4_analisis.txt", "w", encoding='utf-8') as f:
+        f.write(f"Media: {media}\n")
+        f.write(f"Std: {std}\n")
+        f.write(f"Asimetría: {asimetria}\n")
+        f.write(f"Curtosis: {curtosis}\n")
+        f.write(f"ADF p-valor: {p_adf}\n")
 
 
 # =============================================================================
@@ -267,7 +324,7 @@ if __name__ == "__main__":
         "ej4_analisis.txt",
     ]
     for s in salidas:
-        existe = os.path.exists(f"output/{s}")
+        existe = os.path.exists(f"practica_final_izquierdo_garcia_david/output/{s}")
         estado = "✓" if existe else "✗ (pendiente)"
         print(f"  [{estado}] output/{s}")
 
