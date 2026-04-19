@@ -75,26 +75,41 @@ Añade aqui tu descripción y analisis:
 
 **Pregunta 3.1** — Explica en tus propias palabras qué hace la fórmula β = (XᵀX)⁻¹ Xᵀy y por qué es necesario añadir una columna de unos a la matriz X.
 
-> _Escribe aquí tu respuesta_
+> Como inicialmente tenemos la ecuación matricial $y = X \beta$ y queremos despejar la matriz columna de coeficientes $(\beta)$, tenemos que aplicar la matriz inversa de $X$, que solo es posible calcularla para matrices cuadradas(mismo número de filas que de columnas), y la forma de conseguir matrices cuadradas es multiplicarlas por su traspuesta pues el resultado de la multiplicación de matrices es una matriz con el número de filas de la primera y el número de columnas de la segunda, por lo que esto garantiza que $X^TX$ sea una matriz cuadrada y podemos calcular $(X^TX)^{-1}$
+
+> La secuencia de pasos para obtener la fórmula es la siguiente:
+
+> Partimos de la fórmula $$y =X\beta $$
+> Multiplicamos por la izquierda la traspuesta de $X$. $$ X^Ty = X^TX\beta $$
+> Volvemos a multiplicar por la izquierda por la inversa de la matriz cuadrada $X^TX$. $$ (X^TX)^{-1}X^Ty = (X^TX)^{-1}(X^TX)\beta $$ 
+> Como la multiplicación de una matriz por su inversa es la matriz identidad (elemento neutro en la multiplicación de matrices) obtenemos finalmente la expresión inicial. $$ (X^TX)^{-1}X^Ty = \beta $$
+
+> Esto nos permite calcular los coeficientes a partir de los valores que toman las distintas variables $X$ y el valor de la variable objetivo $y$
+
+> La necesidad e añadir una columna de unos a la matriz $X$ es para poder calcular el coeficiente $\beta_0$ que representa el término independiente puesto que en la expresión anterior estaríamos implementando solamente los coeficientes que acompañan a cada una de las variables y estaríamos limitando el modelo a pasar por el origen de coordenadas y no obtendríamos resultados óptimos.
 
 **Pregunta 3.2** — Copia aquí los cuatro coeficientes ajustados por tu función y compáralos con los valores de referencia del enunciado.
 
 | Parametro | Valor real | Valor ajustado |
-|-----------|-----------|----------------|
-| β₀        | 5.0       |                |
-| β₁        | 2.0       |                |
-| β₂        | -1.0      |                |
-| β₃        | 0.5       |                |
+|-----------|------------|----------------|
+| β₀        | 5.0        |       4.86     |
+| β₁        | 2.0        |       2.06     |
+| β₂        | -1.0       |       -1.11    |
+| β₃        | 0.5        |       0.438    |
 
-> _Escribe aquí tu respuesta_
+> Los resultados obtenidos por el ajuste están bastante próximos a los valores reales, las diferencias caen dentro del error esperado.
 
 **Pregunta 3.3** — ¿Qué valores de MAE, RMSE y R² has obtenido? ¿Se aproximan a los de referencia?
 
-> _Escribe aquí tu respuesta_
+> Los valores de las métricas obtenidas y valores de referencia son los siguientes:
 
-**Pregunta 3.4* — Compara los resultados con la reacción logística anterior para tu dataset y comprueba si el resultado es parecido. Explica qué ha sucedido. 
+| Métrica | Valor obtenido |   Valor referencia |
+|---------|----------------|--------------------|
+| $MAE$   |   1.1665       |  $1.2 \pm 0.2$     |
+| $RMSE$  |   1.4612       |  $1.5 \pm 0.2$     |
+| $R^{2}$ |   0.6897       |  $0.8 \pm 0.05$    |
 
-> _Escribe aquí tu respuesta_
+> El MAE y el RMSE caen dentro del valor esperado, sin embargo el valor $R^2$ queda ligeramente por abajo por lo que el modelo no es tan bueno como se esperaba inicialmente. 
 
 ---
 

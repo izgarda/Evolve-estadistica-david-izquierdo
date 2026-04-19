@@ -13,23 +13,23 @@ analítica de Mínimos Cuadrados Ordinarios (OLS):
     β = (XᵀX)⁻¹ Xᵀy
 
 La función debe ser capaz de:
-  1. Añadir el término independiente (intercepto) automáticamente.
-  2. Calcular los coeficientes β₀, β₁, ..., βₙ.
-  3. Devolver las predicciones ŷ para un conjunto de datos nuevo.
-  4. Calcular las métricas de evaluación: MAE, RMSE y R².
+    1. Añadir el término independiente (intercepto) automáticamente.
+    2. Calcular los coeficientes β₀, β₁, ..., βₙ.
+    3. Devolver las predicciones ŷ para un conjunto de datos nuevo.
+    4. Calcular las métricas de evaluación: MAE, RMSE y R².
 
 LIBRERÍAS PERMITIDAS
 --------------------
-  - numpy   (cálculos matriciales)
-  - matplotlib (visualización, opcional)
+    - numpy   (cálculos matriciales)
+    - matplotlib (visualización, opcional)
 
 NO está permitido usar sklearn para el ajuste del modelo en este ejercicio.
 
 SALIDAS ESPERADAS (carpeta output/)
 ------------------------------------
-  - output/ej3_coeficientes.txt   → Coeficientes del modelo ajustado
-  - output/ej3_metricas.txt       → MAE, RMSE y R² sobre datos de test
-  - output/ej3_predicciones.png   → Gráfico Real vs. Predicho
+    - output/ej3_coeficientes.txt   → Coeficientes del modelo ajustado
+    - output/ej3_metricas.txt       → MAE, RMSE y R² sobre datos de test
+    - output/ej3_predicciones.png   → Gráfico Real vs. Predicho
 
 =============================================================================
 """
@@ -39,7 +39,7 @@ import matplotlib.pyplot as plt
 import os
 
 # Crear carpeta de salida si no existe
-os.makedirs("output", exist_ok=True)
+os.makedirs("practica_final_izquierdo_garcia_david/output", exist_ok=True)
 
 
 # =============================================================================
@@ -79,19 +79,20 @@ def regresion_lineal_multiple(X_train, y_train, X_test):
     - np.linalg.lstsq es numéricamente más estable que invertir directamente.
     """
 
-    # TODO: Paso 1 — Añadir columna de unos a X_train para el intercepto β₀
+    # Paso 1 — Añadir columna de unos a X_train para el intercepto β₀
     # Pista: np.ones((n, 1)) y np.hstack([ones, X_train])
-    X_train_b = None  # ← Reemplaza None con tu implementación
+    X_train_b = np.hstack([np.ones((X_train.shape[0], 1)), X_train])
 
-    # TODO: Paso 2 — Calcular los coeficientes β con la fórmula OLS
+    # Paso 2 — Calcular los coeficientes β con la fórmula OLS
     # β = (XᵀX)⁻¹ Xᵀy
-    coefs = None  # ← Reemplaza None con tu implementación
+    # Multiplicación matricial, se debe usar @ o np.dot para el producto de matrices
+    coefs = np.linalg.inv(X_train_b.T @ X_train_b) @ X_train_b.T @ y_train
 
-    # TODO: Paso 3 — Añadir columna de unos a X_test de la misma forma
-    X_test_b = None  # ← Reemplaza None con tu implementación
+    # Paso 3 — Añadir columna de unos a X_test de la misma forma
+    X_test_b = np.hstack([np.ones((X_test.shape[0], 1)), X_test])
 
-    # TODO: Paso 4 — Calcular predicciones ŷ = X_test_b · β
-    y_pred = None  # ← Reemplaza None con tu implementación
+    # Paso 4 — Calcular predicciones ŷ = X_test_b · β
+    y_pred = X_test_b @ coefs
 
     return coefs, y_pred
 
@@ -115,8 +116,9 @@ def calcular_mae(y_real, y_pred):
     -------
     float — Valor del MAE
     """
-    # TODO: Implementa el MAE sin usar sklearn
-    pass
+    # Implementación del MAE sin usar sklearn
+    mae = np.sum(np.abs(y_real - y_pred))/ len(y_real)
+    return mae
 
 
 def calcular_rmse(y_real, y_pred):
@@ -134,8 +136,9 @@ def calcular_rmse(y_real, y_pred):
     -------
     float — Valor del RMSE
     """
-    # TODO: Implementa el RMSE sin usar sklearn
-    pass
+    # Implementación del RMSE sin usar sklearn
+    rmse = np.sqrt(np.sum((y_real - y_pred) ** 2)/ len(y_real))
+    return rmse
 
 
 def calcular_r2(y_real, y_pred):
@@ -155,15 +158,18 @@ def calcular_r2(y_real, y_pred):
     -------
     float — Valor del R² (entre -∞ y 1; cuanto más cercano a 1, mejor)
     """
-    # TODO: Implementa el R² sin usar sklearn
-    pass
+    # Implementación del R² sin usar sklearn
+    ss_res = np.sum((y_real - y_pred) ** 2)
+    ss_tot = np.sum((y_real - np.mean(y_real)) ** 2)
+    r2 = 1 - ss_res / ss_tot if ss_tot != 0 else 0
+    return r2
 
 
 # =============================================================================
 # FUNCIÓN DE VISUALIZACIÓN — COMPLETA ESTA SECCIÓN (OPCIONAL)
 # =============================================================================
 
-def graficar_real_vs_predicho(y_real, y_pred, ruta_salida="output/ej3_predicciones.png"):
+def graficar_real_vs_predicho(y_real, y_pred, ruta_salida="practica_final_izquierdo_garcia_david/output/ej3_predicciones.png"):
     """
     Genera un scatter plot de Valores Reales vs. Valores Predichos.
 
@@ -176,13 +182,21 @@ def graficar_real_vs_predicho(y_real, y_pred, ruta_salida="output/ej3_prediccion
     y_pred      : np.ndarray — Predicciones del modelo
     ruta_salida : str        — Ruta donde guardar la imagen
     """
-    # TODO: Implementa la visualización
+    # Implementación del gráfico de Real vs. Predicho
     # Pistas:
     #   - plt.scatter(y_real, y_pred, alpha=0.6)
     #   - Dibuja la línea de referencia perfecta: y = x
     #   - Añade etiquetas a los ejes y título
     #   - Guarda con plt.savefig(ruta_salida, dpi=150, bbox_inches='tight')
-    pass
+    plt.figure(figsize=(6, 6))
+    plt.scatter(y_real, y_pred, alpha=0.6, color='blue', edgecolor='k')
+    plt.plot([y_real.min(), y_real.max()], [y_real.min(), y_real.max()], 'r--', lw=2)
+    # Etiquetas y título
+    plt.xlabel("Valores Reales")
+    plt.ylabel("Valores Predichos")
+    plt.title("Regresión Lineal Múltiple")
+    # Guardado de la figura
+    plt.savefig(ruta_salida, dpi=150, bbox_inches='tight')
 
 
 # =============================================================================
@@ -256,7 +270,7 @@ if __name__ == "__main__":
     # -------------------------------------------------------------------------
 
     # Fichero de coeficientes
-    with open("output/ej3_coeficientes.txt", "w") as f:
+    with open("practica_final_izquierdo_garcia_david/output/ej3_coeficientes.txt", "w", encoding="utf-8") as f:
         f.write("Regresión Lineal Múltiple — Coeficientes ajustados\n")
         f.write("=" * 50 + "\n")
         nombres = ["Intercepto (β₀)"] + [f"β{i+1} (feature {i+1})" for i in range(n_features)]
@@ -267,7 +281,7 @@ if __name__ == "__main__":
             f.write(f"  {nombre}: {valor:.6f}\n")
 
     # Fichero de métricas
-    with open("output/ej3_metricas.txt", "w") as f:
+    with open("practica_final_izquierdo_garcia_david/output/ej3_metricas.txt", "w", encoding="utf-8") as f:
         f.write("Regresión Lineal Múltiple — Métricas de evaluación\n")
         f.write("=" * 50 + "\n")
         f.write(f"  MAE  : {mae:.6f}\n")
